@@ -4,6 +4,7 @@
 
 let votingRounds = 25;
 let productArray = [];
+let previousArray = [];
 
 // *** DOM Windows ***
 
@@ -14,6 +15,10 @@ let imgThree = document.getElementById('img-three');
 
 let resultsBtn = document.getElementById('show-results-btn');
 let resultsList = document.getElementById('results-container');
+
+// *** Canvas Element ***
+
+let ctx = document.getElementById('my-chart');
 
 // *** Constructor Functions ***
 
@@ -30,16 +35,46 @@ function randomImgGenerator() {
   return Math.floor(Math.random() * productArray.length);
 }
 
-function renderImgs(){
-  let imgOneRandom = randomImgGenerator();
-  let imgTwoRandom = randomImgGenerator();
-  let imgThreeRandom = randomImgGenerator();
-
-  while (imgOneRandom === imgTwoRandom || imgTwoRandom === imgThreeRandom || imgTwoRandom === imgThreeRandom) {
-    imgTwoRandom = randomImgGenerator();
-    imgThreeRandom = randomImgGenerator();
-    // Make sure they're unique
+// Function to check if two arrays are equal
+function arraysAreEqual(arr1, arr2) {
+  if (arr1.length !== arr2.length) {
+    return false;
   }
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function renderImgs(){
+  // Store the current set of indicies for comparison
+  let currentSetIndices = [];
+
+  // Generate new indicies until the current set is different from the previous set
+  do {
+    // Clear current set indicies
+    currentSetIndices = [];
+
+    // Generate new indicies
+    while(currentSetIndices.length < 3){
+      let randomIndex = randomImgGenerator();
+      if(!currentSetIndices.includes(randomIndex) && !previousArray.includes(randomIndex)){
+        currentSetIndices.push(randomIndex);
+      }
+    }
+  } while (arraysAreEqual(currentSetIndices, previousArray));
+
+  // Update the previousArray with the current set
+  previousArray = currentSetIndices;
+
+  // *** TODO Make sure each set of 3 don't have any similar pictures as the previous round ***
+
+  // Display images and perform other actions as needed
+  let imgOneRandom = currentSetIndices[0];
+  let imgTwoRandom = currentSetIndices[1];
+  let imgThreeRandom = currentSetIndices[2];
 
   imgOne.src = productArray[imgOneRandom].img;
   imgOne.title = productArray[imgOneRandom].name;
@@ -55,6 +90,67 @@ function renderImgs(){
   productArray[imgThreeRandom].views++;
 
 }
+
+function renderChart(){
+  let productNames = [];
+  let productViews = [];
+  let productVotes = [];
+
+  for (let i = 0; i < productArray.length; i++){
+    productNames.push(productArray[i].name);
+    productViews.push(productArray[i].views);
+    productVotes.push(productArray[i].votes);
+  }
+
+  let chartObj = {
+    type: 'bar',
+    data: {
+      labels: productNames,
+      datasets: [{
+        label: '# of Views',
+        data: productViews, // Array to hold views
+        borderWidth: 3,
+        backgroundColor: 'grey',
+        borderColor: 'grey'
+      },
+      {
+        labels: productViews,
+        label: '# of Votes',
+        data: productVotes, // Array to hold votes
+        borderWidth: 3,
+        backgroundColor: 'blue',
+        borderColor: 'grey'
+      }
+      ]
+    },
+    options: {
+      plugins: {
+        tooltip: {
+          enabled: true,
+          mode: 'nearest',
+          backgroundColor: 'rgb(0, 0, 139)'
+        },
+        title: {
+          display: true,
+          text: 'Odd-Duck Product Voting Results'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          display: true,
+          text: 'Votes'
+        },
+        x: {
+          text: 'Product Name',
+          display: true
+        }
+      }
+    }
+  };
+  new Chart(ctx, chartObj);
+}
+
 
 // *** Event Handlers ***
 
@@ -80,10 +176,13 @@ function handleImgClick(event) {
 
 function handleShowResults(){
   if (votingRounds === 0){
+    renderChart();
+    let resultsList = document.getElementById('results-list');
+
     for(let i=0; i < productArray.length; i++){
       let productListItem = document.createElement('li');
 
-      productListItem.textContent = `${productArray[i].name} - Votes: ${productArray[i].votes} & Views: ${productArray[i].views}`;
+      productListItem.textContent = `${productArray[i].name[0].toUpperCase() + productArray[i].name.slice(1)} - Votes: ${productArray[i].votes} & Views: ${productArray[i].views}`;
 
       resultsList.appendChild(productListItem);
     }

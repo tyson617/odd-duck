@@ -17,15 +17,27 @@ h2, p {
 #results-container {
   margin: 10px;
   padding: 10px;
-  border: 2px solid #ddd;
-  width: fit-content;
+  width: 100%;
+  height: auto;
+  display: flex;
+}
+
+#results-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-right: 20px;
+}
+
+#results-list li {
+  margin-bottom: 5px;
 }
 
 #img-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  margin: 10px;
+  margin: 50px;
 }
 
 img {
@@ -47,4 +59,12 @@ img:hover {
   background-color: #007bff;
   color: #fff;
   border: none
+}
+
+canvas {
+  margin: 50px;
+  padding: 10px;
+  float: right;
+  width: 200px;
+  height: 200px;
 }
