@@ -171,6 +171,14 @@ function handleImgClick(event) {
   // Remove ability to click once voting is done
   if(votingRounds === 0){
     imgContainer.removeEventListener('click', handleImgClick);
+
+// **** LOCAL STORAGE START HERE ****
+    // ! Step 1 Convert data to string for local storage ****
+    let stringifiedProducts = JSON.stringify(productArray);
+
+    // ! Step 2 Set to local storage
+    localStorage.setItem('products', stringifiedProducts);
+
   }
 }
 
@@ -193,28 +201,59 @@ function handleShowResults(){
 
 // **** Excecutable Code ****
 
-let bag = new Product('bag', 'jpg');
-let banana = new Product('banana');
-let bathroom = new Product('bathroom');
-let boots = new Product('boots');
-let breakfast = new Product('breakfast');
-let bubblegum = new Product('bubblegum');
-let chair = new Product('chair');
-let cthulhu = new Product('cthulhu');
-let dogDuck = new Product('dog-duck');
-let dragon = new Product('dragon');
-let pen = new Product('pen');
-let petSweep = new Product('pet-sweep');
-let scissors = new Product('scissors');
-let shark = new Product('shark');
-let sweep = new Product('sweep', 'png');
-let tauntaun = new Product('tauntaun');
-let unicorn = new Product('unicorn');
-let waterCan = new Product('water-can');
-let wineGlass = new Product('wine-glass');
 
+// **** Local Storage continues here ****
 
-productArray.push(bag, banana, bathroom, boots, breakfast, bubblegum, chair, cthulhu, dogDuck, dragon, pen,petSweep, scissors, shark, sweep, tauntaun, unicorn, waterCan, wineGlass);
+// Get from local storage
+let retrievedProducts = localStorage.getItem('products');
+// Convert to useable code
+let parsedProducts = JSON.parse(retrievedProducts);
+
+// *** REBUILDING PRODUCTS USING THE CONSTRUCTOR "UNHAPPY PATH" ***
+
+// Re-Configuring retrieved code from local storage "HAPPY PATH"
+// Check local storage for existing data, else create new product
+
+if(retrievedProducts){
+  for(let i = 0; i < parsedProducts.length; i++){
+    // Sweep needs its own loop because its a png
+    if(parsedProducts[i].name === 'sweep'){
+      let reconstructedSweepProduct = new Product(parsedProducts[i].name, 'png');
+      // Grab votes/views present prior to adding to local
+      reconstructedSweepProduct.views = parsedProducts[i].views;
+      reconstructedSweepProduct.votes = parsedProducts[i].votes;
+      productArray.push(reconstructedSweepProduct);
+    } else {
+      // Re-configure for remaining products
+      let reconstructedProduct = new Product (parsedProducts[i].name);
+      reconstructedProduct.views = parsedProducts[i].views;
+      reconstructedProduct.votes = parsedProducts[i].votes;
+      productArray.push(reconstructedProduct);
+    }
+  }
+} else {
+  let bag = new Product('bag', 'jpg');
+  let banana = new Product('banana');
+  let bathroom = new Product('bathroom');
+  let boots = new Product('boots');
+  let breakfast = new Product('breakfast');
+  let bubblegum = new Product('bubblegum');
+  let chair = new Product('chair');
+  let cthulhu = new Product('cthulhu');
+  let dogDuck = new Product('dog-duck');
+  let dragon = new Product('dragon');
+  let pen = new Product('pen');
+  let petSweep = new Product('pet-sweep');
+  let scissors = new Product('scissors');
+  let shark = new Product('shark');
+  let sweep = new Product('sweep', 'png');
+  let tauntaun = new Product('tauntaun');
+  let unicorn = new Product('unicorn');
+  let waterCan = new Product('water-can');
+  let wineGlass = new Product('wine-glass');
+
+  productArray.push(bag, banana, bathroom, boots, breakfast, bubblegum, chair, cthulhu, dogDuck, dragon, pen,petSweep, scissors, shark, sweep, tauntaun, unicorn, waterCan, wineGlass);
+}
 
 renderImgs();
 
