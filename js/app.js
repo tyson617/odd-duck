@@ -110,16 +110,16 @@ function renderChart(){
         label: '# of Views',
         data: productViews, // Array to hold views
         borderWidth: 3,
-        backgroundColor: 'grey',
-        borderColor: 'grey'
+        backgroundColor: 'beige',
+        borderColor: 'burlywood'
       },
       {
         labels: productViews,
         label: '# of Votes',
         data: productVotes, // Array to hold votes
         borderWidth: 3,
-        backgroundColor: 'blue',
-        borderColor: 'grey'
+        backgroundColor: 'lavender',
+        borderColor: 'cadetblue'
       }
       ]
     },
